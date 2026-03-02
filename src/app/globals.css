@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-sans, "IBM Plex Sans"), "PingFang TC", "Microsoft JhengHei", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono, "IBM Plex Mono"), ui-monospace, "Cascadia Code", monospace;
+
+  --color-jade-50: #f0faf8;
+  --color-jade-100: #d0f0ea;
+  --color-jade-200: #a1e1d5;
+  --color-jade-600: #0a6b5a;
+  --color-jade-700: #085548;
+  --color-jade-800: #064036;
+
+  --color-parchment-50: #f7f4ef;
+  --color-parchment-100: #ede8e0;
+  --color-parchment-200: #ddd6cc;
+  --color-parchment-300: #c8bfb3;
+
+  --color-ink-900: #1a1814;
+  --color-ink-700: #3d3830;
+  --color-ink-500: #6b6560;
+  --color-ink-300: #a89f96;
+
+  --color-amber-warm: #c2690c;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: #f7f4ef;
+    color: #1a1814;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Remove default focus ring, add custom */
+  :focus-visible {
+    outline: 2px solid #0a6b5a;
+    outline-offset: 2px;
+  }
+}
+
+/* Step card entrance animation */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-enter {
+  animation: slideUp 0.25s ease-out forwards;
+}
+
+/* Pulse for loading state */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 1.5s ease-in-out infinite;
+}
