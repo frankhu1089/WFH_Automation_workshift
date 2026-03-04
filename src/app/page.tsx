@@ -10,6 +10,8 @@ import SettingsPanel from "@/components/SettingsPanel";
 import ConflictResolver from "@/components/ConflictResolver";
 import EventPreview from "@/components/EventPreview";
 import ExportButton from "@/components/ExportButton";
+import SyncPanel from "@/components/SyncPanel";
+import GoogleAuthButton from "@/components/GoogleAuthButton";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -126,6 +128,7 @@ export default function Home() {
     { label: "衝突", active: hasConflicts },
     { label: "預覽", active: !!result },
     { label: "匯出", active: canExport },
+    { label: "同步", active: canExport },
   ];
 
   return (
@@ -134,15 +137,22 @@ export default function Home() {
 
         {/* ── Page header ── */}
         <header className="pb-5 border-b border-parchment-200">
-          <div className="flex items-baseline gap-3">
-            <h1 className="text-xl font-semibold text-ink-900 tracking-tight">
-              班表同步器
-            </h1>
-            <span className="font-mono text-xs text-ink-300">WMFM Schedule Sync</span>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="flex items-baseline gap-3">
+                <h1 className="text-xl font-semibold text-ink-900 tracking-tight">
+                  班表同步器
+                </h1>
+                <span className="font-mono text-xs text-ink-300">WMFM Schedule Sync</span>
+              </div>
+              <p className="mt-1.5 text-sm text-ink-500">
+                上傳確認版班表 Excel → 解析排班 → 匯出 ICS 至 Google Calendar
+              </p>
+            </div>
+            <div className="shrink-0 pt-0.5">
+              <GoogleAuthButton />
+            </div>
           </div>
-          <p className="mt-1.5 text-sm text-ink-500">
-            上傳確認版班表 Excel → 解析排班 → 匯出 ICS 至 Google Calendar
-          </p>
 
           {/* Progress */}
           <div className="flex items-center gap-1 mt-4 flex-wrap">
@@ -262,9 +272,24 @@ export default function Home() {
           </StepCard>
         )}
 
+        {/* ── Step 6 (or 5): Google Calendar Sync ── */}
+        {canExport && (
+          <StepCard
+            step={hasConflicts ? 6 : 5}
+            title="同步至 Google Calendar"
+            subtitle="Sync"
+          >
+            <SyncPanel
+              events={resolvedEvents}
+              month={month}
+              code={code.trim() || "中"}
+            />
+          </StepCard>
+        )}
+
         {/* ── Footer ── */}
         <footer className="text-center text-[11px] text-ink-300 py-4 border-t border-parchment-200">
-          Stage 1 MVP · 解析完全在瀏覽器端進行，班表資料不會上傳至任何伺服器
+          Stage 2 · 解析在瀏覽器端進行；同步時 access token 僅傳至本機 API route
         </footer>
       </div>
     </main>

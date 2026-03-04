@@ -191,14 +191,30 @@ export function parseFiles(
     allEvents = allEvents.concat(fileEvents);
   }
 
-  // Add clinic events
+  // Add clinic events — suppress any clinic whose time bucket is already covered
+  // by a schedule event (e.g. OPD on Monday morning IS the fixed clinic)
   const clinicEvents = generateClinicEvents(
     month,
     opts.code,
     opts.clinicRules,
     opts.timeTemplates
   );
-  allEvents = allEvents.concat(clinicEvents);
+
+  const morningDates = new Set(allEvents.filter((e) => e.slot === "morning").map((e) => e.date));
+  const afternoonDates = new Set(allEvents.filter((e) => e.slot === "afternoon").map((e) => e.date));
+
+  for (const ce of clinicEvents) {
+    const hour = parseInt(ce.start.split("T")[1]?.split(":")[0] ?? "0");
+    const isMorningClinic = hour < 13;
+    const covered = isMorningClinic ? morningDates.has(ce.date) : afternoonDates.has(ce.date);
+    if (covered) {
+      diagnostics.warnings.push(
+        `Clinic suppressed on ${ce.date}: schedule already has a ${isMorningClinic ? "morning" : "afternoon"} event`
+      );
+    } else {
+      allEvents.push(ce);
+    }
+  }
 
   // Deduplicate by dedupeKey (keep first occurrence)
   const seen = new Set<string>();
